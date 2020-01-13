@@ -1,0 +1,75 @@
+﻿@model IEnumerable<System_Controle.Models.Movie>
+@{
+    ViewBag.Title = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Movies</h2>
+
+<p>
+    @Html.ActionLink("New Movie", "New", "Movies", null, new { @class = "btn btn-primary" })
+</p>
+
+<table id="movies" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th> Movie</th>
+            <th> Genre</th>
+            <th> Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @*Html.DisplayFor(modelItem => item.Name)*@
+                    @Html.ActionLink(item.Name, "Edit", "Movies", new { id = item.Id }, null)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre.Name)
+                </td>
+                <td>
+                    <button data-movie-id=@item.Id class="btn-link js-delete">Delete </button>
+                </td>
+                @*<td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    </td>*@
+            </tr>
+        }
+    </tbody>
+
+
+</table>
+
+@section scripts
+{
+    <script>
+
+        $(document).ready(function () {
+            //use datatables bundle
+            var table=$("#movies").DataTable()
+            $("#movies .js-delete").on("click", function () {
+                var button = $(this);
+                if (confirm("Are you sure delete movie?")) {
+                    $.ajax({
+                        url: "/Api/Movies/" + button.attr("data-movie-id"),
+                        method: "Delete",
+                        success: function () {
+                              table.row(button.parents("tr")).remove().draw();
+                        }
+
+
+                    })
+
+                }
+            })
+
+
+        });
+    </script>
+}
+
+
